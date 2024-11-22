@@ -1,0 +1,39 @@
+// The code for the second room 
+#include <stdio.h>
+
+#include <util/delay.h>
+#include <avr/io.h>
+#include "usart.h"
+#include "adcpwm.h"
+#include "i2cmaster.h"
+#include "lcd.h"
+
+
+int (main) void {
+  pwm3_init(); // initialize PWM signal at pin PB0, PB1, PB2 with frequency of 150 Hz
+  adc_init();  // initialize the ADC module
+
+  DDRC = 0b11110000;  // configure pins PC0 to PC3 as inputs
+  PORTC = 0b00110000; // configure pins PC0 to PC3 to not use pullups for the ADC
+
+  DDRD = 0xFF;
+    PORTD = 0x00;
+
+    DDRC = 0xF0;
+    PORTC = 0x3F;
+   
+  while(1){
+   PORTD = 0b10000000; // Initialize PortD
+   if (PIND = 0b1111111){ //PIND 4 is Low
+    Lcd_set_cursor(0,0);
+    printf("The light is on \n");
+    PINB = 0b00101111; // PINB 5 or 13 pin is High
+   }
+   if (PIND = 0b00110111) // PIND 4 is High
+   LCD_set_cursor(0,0);
+   printf ("The light is on\n");
+   PINB = 0b11111111; //PINB 5 or 13 pin is LOW
+
+  }
+
+}
