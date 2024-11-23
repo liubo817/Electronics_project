@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <util/delay.h>
+#include <avr/io.h>
+#include "usart.h"
+#include "adcpwm.h"
+#include "i2cmaster.h"
+#include "lcd.h"
+
+int(main) void
+{
+  pwm3_init(); // initialize PWM signal at pin PB0, PB1, PB2 with frequency of 150 Hz
+  adc_init();  // initialize the ADC module
+
+  DDRC = 0b11110000;  // configure pins PC0 to PC3 as inputs
+  PORTC = 0b00110000; // configure pins PC0 to PC3 to not use pullups for the ADC
+
+  DDRD = 0xFF;
+  PORTD = 0x00;
+
+  DDRC = 0xF0;
+  PORTC = 0x3F;
+
+  float adc_value;
+
+  while (1)
+  {
+    PORTD = 0b10000000; // Activate PORTD
+    if (PIND = 0b1111111)
+    { // if PIND 7 is LOW
+      Lcd_set_cursor(0, 0);
+      printf("The light is on \n");
+      PINB = 0b00110111; // PINB 4 or 12 pin is high
+    }
+
+    if (PIND = 0b00000111) // if PIND 7 is HIGH
+      for (int i = 1; i < 100; i++)
+      {
+        pwm3_set_duty(i, i, i, ); // duty cycles in percent at PB0, PB1, PB2, from 0 - 100
+        // pwm1_set_duty(i); //duty cycle in percent at PB1, from 0 - 100
+        _delay_ms(1);
+      }
+    adc_value = adc_read(0); // Value 0-1023 representing analog voltage on pin PC0
+    LCD_set_cursor(0, 0);
+    printf("The light is on 0.%f % \n", adc_value / 1023 * 100);
+    PINB = 0b11111111; // there is no output and PINB 4 or PIND 12
+  }
+}
+
+/*  float adc_value;
+
+  while (1)
+  {
+    for (int i = 1; i < 100; i++)
+    {
+      pwm3_set_duty(i, i, i); // duty cycles in percent at PB0, PB1, PB2, from 0 - 100
+      // pwm1_set_duty(i); //duty cycle in percent at PB1, from 0 - 100
+      _delay_ms(1);
+    }
+    adc_value = adc_read(0); // Value 0-1023 representing analog voltage on pin PC0
+    printf("Result of the ADC conversion : %.0f\n", adc_value / 1023 * 100);
+  }
+}*/
