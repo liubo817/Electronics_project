@@ -3,38 +3,46 @@
 #include <avr/io.h>
 #include "usart.h"
 #include "adcpwm.h"
+#include "lcd.h"
+#include "i2cmaster.h"
 
 void printBinary(uint8_t value);
-int pirMask = 0b00000001;
-int ledMask = 0b11111101;
+
+uint8_t pirMaskD = 0b10000000;
+uint8_t ledMask = 0b10111111;
+
 
 int main(void)
 { 
-  uart_init(); 
-  io_redirect();
+  i2c_init();
+  LCD_init();
+  //uart_init(); 
+  //io_redirect();
   //pwm1_init(); // initialize PWM signal at pin PB1, frequency of 4 kHz
   //pwm3_init(); // initialize PWM signal at pin PB0, PB1, PB2 with frequency of 150 Hz
   adc_init(); // initialize the ADC module
-
+  LCD_set_cursor(0,0);
   unsigned int adc_value;
   DDRC = 0b11110000; // configure pins PC0 to PC3 as inputs
   PORTC = 0b00110000; // configure pins PC0 to PC3 to not use pullups for the ADC
-  DDRB = 0b11111110;
-  PORTB = 0b00000010;
+  //DDRB = 0b11111110;
+  //PORTB = 0b00000010;
+  DDRD = 0b01111111;
+  PORTD = 0b01000000;
+
   while(1) {
       adc_value = adc_read(0);
-      printf("PINB: ");
-      printBinary(PINB); // Print the binary value of PIND
+      //printf("PIND: ");
+      printBinary(PIND); // Print the binary value of PIND
       _delay_ms(1000);   // Delay for readability
-      if((PINB & pirMask == pirMask) || (adc_value <= 50))
+      if((PIND & pirMaskD) == pirMaskD || adc_value <= 45)
       {
-        printf("Detected.\n");
-        PORTB &= ledMask;
+        printf("Detected");
+        PORTD &= ledMask;
       }else{
-        PORTB |= ~ledMask;
-      }
-      
-      printf("ADC value: %u\n", adc_value);
+        PORTD |= ~ledMask;
+      } 
+      //printf("ADC value: %u\n", adc_value);
     }
   return 0;
     
@@ -48,5 +56,5 @@ void printBinary(uint8_t value) {
             printf("0");
         }
     }
-    printf("\n"); // Move to the next line after printing
+    //printf("\n"); // Move to the next line after printing
 }
